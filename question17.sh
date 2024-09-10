@@ -20,6 +20,7 @@ git checkout -b branch2
 mv dir1/dir2/foo dir1/dir2/foo_modified
 # Remove bar_copy and add newfile2 in dir3
 rm dir3/bar_copy
+rm dir3/bar
 echo "This is newfile2" > dir3/newfile2
 # Stage and commit changes in branch2
 git add .
