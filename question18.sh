@@ -1,40 +1,32 @@
 #!/bin/bash
 
-# Step 1: Identify all branches
-echo "Identifying all branches..."
+
 git branch -r
 
-# Step 2: Merge branches that start with 'ready' into main
+
 for branch in $(git branch -r | grep 'ready'); do
-  # Checkout the main branch
   git checkout main
-  # Merge the ready branch into main
-  git merge origin/$branch
-  # Resolve conflicts if any
+  git merge $branch
+
+  
   if [ $? -ne 0 ]; then
-    echo "Merge conflict detected in branch $branch. Please resolve manually."
-    # After resolving conflicts
+    echo "Merge conflict detected. Please resolve conflicts."
+    
     git add .
-    git commit -m "Resolved merge conflicts from $branch into main"
+    git commit -m "Resolved merge conflicts with $branch"
   fi
-  # Delete the merged branch
-  git branch -d $branch
-  git push origin --delete $branch
+
+  
+  branch_local=$(echo $branch | sed 's/origin\///')
+  git branch -d $branch_local
+  git push origin --delete $branch_local
 done
 
-# Step 3: Update branches that start with 'update' with latest main changes
+
 for branch in $(git branch -r | grep 'update'); do
-  # Checkout the update branch
-  git checkout $branch
-  # Merge the main branch into the update branch to update it
+  branch_local=$(echo $branch | sed 's/origin\///')
+  git checkout $branch_local
   git merge main
-  # Resolve conflicts if any
-  if [ $? -ne 0 ]; then
-    echo "Merge conflict detected in branch $branch. Please resolve manually."
-    # After resolving conflicts
-    git add .
-    git commit -m "Resolved merge conflicts and updated $branch with main"
-  fi
-  git push origin $branch
+  git push origin $branch_local
 done
 
